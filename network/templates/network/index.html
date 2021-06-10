@@ -1,11 +1,7 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-TODO
 
-
-
-<div>Teste1</div>
 
 
 <div id="initial">Teste</div>
@@ -15,21 +11,17 @@ TODO
 <script type="text/babel">
 
     //React aqui pega o conteúdo do HTML da postagem para salvar
-
-    class Submit_post extends React.Component {
-
-    }
-
     class Timeline extends React.Component {
         render() {
             return (
-                <div>
+                < div className="list-group-item list-group-item-action">
                     <div>Post list by timestamp</div>
-                    <div><input onMouseDown={this.listposts} type="button" /></div>
                     <div id="postlist" ></div>
-                </div>
-
+                </div >
             );
+        }
+        componentDidMount() {
+            return this.listposts()
         }
         listposts = (event) => {
             // Fazer um fetch e chamar o show posts
@@ -42,65 +34,55 @@ TODO
                     });;
                 });
             function posting_posts(posts) {
-
                 const post = document.createElement('div');
-                post.className = 'post';
-                post.innerHTML = posts.content;
-
-
-
+                post.className = "list-group-item list-group-item-action";
+                post.innerHTML = `<div>${posts.user}</div><div>${posts.content}</div><div>${posts.timestamp}</div>`;
                 document.querySelector('#postlist').append(post);
             }
-
         }
-
-
     }
-
     class Compose extends React.Component {
         constructor(props) {
             super(props);
             this.state = {
-                //postuser: self.user,
+                postuser: "",
                 content: "",
             };
         }
-
-
         render() {
             return (
-                <div>
+                <div className="list-group-item list-group-item-action">
                     <div><h2>Post:</h2></div>
                     <div><input id='content' type="text" onChange={this.updateContent} /></div>
-                    <div><input onMouseDown={this.submitButtonPress} value='Submit' type="button" /></div>
+                    <div><input onClick={this.submitButtonPress} value='Submit' type="button" /></div>
                     <div>{this.state.content}</div>
-
                 </div>
 
             );
         }
         submitButtonPress = (event) => {
             //const userr = this.dataset.section;
+
             console.log("button Clicked");
             console.log(`Content: ${this.state.content}`);
             const userr = document.querySelector('#userr').innerHTML;
             const contentt = this.state.content;
             console.log(userr)
-            //if (this.state.content != "") {
             console.log("entenred the saving post")
             fetch('/posts', {
                 method: 'POST',
                 body: JSON.stringify({
-                    //postuser: event.request.user,
+                    postuser: userr,
                     content: contentt,
                 })
             })
                 .then(response => response.json())
                 .then(result => {
                     console.log(result)
+                    fetch("", {
+                        method: 'GET'
+                    })
                 });
-            //} else { console.log("no content yet") }
-
 
         }
         updateContent = (event) => {
@@ -112,6 +94,7 @@ TODO
 
 
     class Initial extends React.Component {
+
         render() {
             return (
                 <div>
@@ -121,8 +104,8 @@ TODO
                 </div>
             );
         }
-    }
 
+    }
     ReactDOM.render(<Initial />, document.querySelector('#initial'));
 </script>
 {% endblock %}

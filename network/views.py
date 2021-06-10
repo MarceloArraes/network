@@ -12,6 +12,7 @@ from .models import Post, User
 
 
 def index(request):
+    print("entered INDEX !!!!!!!!!!!!")
     return render(request, "network/index.html")
 
 
@@ -77,9 +78,11 @@ def post(request):
 
     # Check post content
     data = json.loads(request.body)
-
+    #postuser1 = data.get("postuser", "")
     postcontent = data.get("content", "")
-    userr = request.user
+
+    #useruser = Post.objects.get('postuser.username==postuser1')
+
     print(len(postcontent))
     if str(len(postcontent)) == '0':
         return JsonResponse({"error": "Content needed."}, status=400)
@@ -89,7 +92,7 @@ def post(request):
 
 # crete post and add to datebase
     posting = Post(
-        # postuser=userr,
+        postuser=request.user,
         content=postcontent,
     )
     posting.save()
@@ -98,7 +101,6 @@ def post(request):
 
 def showPosts(request):
     posts = Post.objects.all()
-    print("!!!!!!!!!!!entered Show Posts!!!!!!!!!!!")
     # Return posts in reverse chronologial order
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)

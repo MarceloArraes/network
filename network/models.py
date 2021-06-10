@@ -8,17 +8,15 @@ class User(AbstractUser):
 
 
 class Post(models.Model):
+    postuser = models.ForeignKey(
+        "User", on_delete=models.CASCADE, related_name="posts")
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def serialize(self):
         return {
-            # "user": self.postuser,
+            "user": self.postuser.username,
             "content": self.content,
             "timestamp": self.timestamp
 
         }
-
-
-"""     postuser = models.ForeignKey(
-        "User", on_delete=models.CASCADE, related_name="posts") """
