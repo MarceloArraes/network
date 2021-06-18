@@ -12,7 +12,6 @@ from .models import Post, User
 
 
 def index(request):
-    print("entered INDEX !!!!!!!!!!!!")
     return render(request, "network/index.html")
 
 
@@ -99,9 +98,26 @@ def post(request):
     return JsonResponse({"message": "Post sent successfully."}, status=201)
 
 
+def follow_user(request):
+    print(request.user.username)
+    print("ENTROU EM FOLLOW! !!!!!!!!!!!!!!")
+    #request.user.following1 = request.user1
+    return False
+
+
 def showPosts(request):
+    #posts = Post.objects.filter(postuser=request.user)
     posts = Post.objects.all()
     # Return posts in reverse chronologial order
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
+    return False
+
+
+def listUsers(request):
+    print("ENTERING LISTUSERS!!!!!!!!!!!!!!!!")
+    users = User.objects.all()
+    #users = users.order_by("-user").all()
+    return JsonResponse([user.serialize() for user in users], safe=False)
+
     return False

@@ -4,7 +4,20 @@ from django.db.models.base import Model
 
 
 class User(AbstractUser):
+    following1 = models.ManyToManyField("self", symmetrical=False)
+
+    def serialize(self):
+        return {
+            "user": self.username,
+            "date_joined": self.date_joined,
+            "superuser": self.is_superuser,
+        }
+
     pass
+
+
+"""     following1 = models.ForeignKey(
+        "self", on_delete=models.CASCADE, related_name="following", blank=True) """
 
 
 class Post(models.Model):

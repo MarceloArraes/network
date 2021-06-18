@@ -5,42 +5,120 @@
 
 
 <div id="initial">Teste</div>
-
+<div id="initial2">Teste</div>
 
 
 <script type="text/babel">
 
     //React aqui pega o conteúdo do HTML da postagem para salvar
+
+    /*     class Posted extends React.Component {
+            render() {
+                return <div>
+                    <div>{this.props.user} POSTED! FOLLOW IT</div>
+                    <input type="button" onClick={this.checkFollow} />Follow User
+    
+                </div>;
+            }
+            checkFollow = (event) => {
+                console.log("entered the checkFollow")
+            }
+        } */
+
+    class Userlists extends React.Component {
+        render() {
+            return (< div className="list-group-item list-group-item-action">
+                <div>Post list of users by alphabetical order</div>
+                <div id="userlist"><div id="follow2"></div ></div >
+
+            </div >)
+        }
+        showUsers = (event) => {
+            console.log("entered showUsers")
+        }
+        componentDidMount() {
+            return this.listusers()
+        }
+        listusers = (event) => {
+
+            console.log("entering listusers")
+            fetch('/userlist')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("data")
+                    console.log(data)
+                    data.forEach(element => {
+                        const list = document.createElement('div');
+                        list.className = "list-group-item list-group-item-action";
+                        list.innerHTML = `<div>User: ${element.user}</div><div>Admin Status:${element.superuser}</div><div>Data joined: ${element.data_joined}</div><input type="button" onClick= console.log("clicked") />`
+                        document.querySelector('#userlist').append(list);
+                    });
+                });
+        }
+    }
+
+
     class Timeline extends React.Component {
+
+        constructor(props) {
+            super(props)
+            this.state = {
+                userposts: [],
+            };
+        }
+
         render() {
             return (
                 < div className="list-group-item list-group-item-action">
                     <div>Post list by timestamp</div>
-                    <div id="postlist" ></div>
+                    <div id="postlist"></div >
+                    <ul>
+                        {this.state.userposts.map(post => (
+                            <li key={post.id}>{post}</li>
+                        ))}
+                    </ul>
                 </div >
             );
         }
-        componentDidMount() {
-            return this.listposts()
-        }
+
         listposts = (event) => {
+            let userposts = []
             // Fazer um fetch e chamar o show posts
             fetch('/showposts')
                 .then(response => response.json())
                 .then(data => {
+                    this.updateUserpost(userposts = data.map((data, index) => {
+                        return (
+                            <p key={data.id} className="list-group-item list-group-item-action">
+                                {data.user}  <p>{data.content}</p><p>{data.timestamp}
+                                </p></p>
+                        );
+
+                    }));
+                    console.log("List Posts")
                     console.log(data)
-                    data.forEach(element => {
-                        posting_posts(element)
-                    });;
                 });
-            function posting_posts(posts) {
-                const post = document.createElement('div');
-                post.className = "list-group-item list-group-item-action";
-                post.innerHTML = `<div>${posts.user}</div><div>${posts.content}</div><div>${posts.timestamp}</div>`;
-                document.querySelector('#postlist').append(post);
-            }
+            console.log(userposts)
+
         }
+        updateUserpost = (userpost) => {
+            console.log("entering update Userpost")
+            this.setState({ userposts: userpost })
+            return true
+        }
+
+
+        checkFollow = (event) => {
+            console.log("entered the checkFollow")
+        }
+
+        componentDidMount() {
+            return this.listposts()
+
+        }
+
     }
+
     class Compose extends React.Component {
         constructor(props) {
             super(props);
@@ -65,6 +143,7 @@
 
             console.log("button Clicked");
             console.log(`Content: ${this.state.content}`);
+            //userr irrelevante já q adiciono o user pelo request no view em python;
             const userr = document.querySelector('#userr').innerHTML;
             const contentt = this.state.content;
             console.log(userr)
@@ -72,6 +151,7 @@
             fetch('/posts', {
                 method: 'POST',
                 body: JSON.stringify({
+                    //postuser desnecessario ja q eu adiciono usuario no view em python com um request.user
                     postuser: userr,
                     content: contentt,
                 })
@@ -79,6 +159,7 @@
                 .then(response => response.json())
                 .then(result => {
                     console.log(result)
+                    //SErviu para nada. Ainda n sei como atualizar a pag depois de add um novo post
                     fetch("", {
                         method: 'GET'
                     })
@@ -104,8 +185,10 @@
                 </div>
             );
         }
-
     }
+
     ReactDOM.render(<Initial />, document.querySelector('#initial'));
+    ReactDOM.render(<Userlists />, document.querySelector('#initial2'));
+
 </script>
 {% endblock %}
