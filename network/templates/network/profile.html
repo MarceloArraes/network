@@ -1,0 +1,32 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+
+
+<div id="initial"></div>
+
+{% if user.is_authenticated %}
+<div id="compose"></div>
+{% endif %}
+
+<div>Post list by timestamp
+  <div id="timeline"></div>
+</div>
+
+<script type="text/babel">
+
+  class Initial extends React.Component {
+    render() {
+      return (
+        <div>
+          <dir>PROFILE PAGE</dir>
+        </div>
+      );
+    }
+  }
+
+  ReactDOM.render(<Initial />, document.querySelector('#initial'));
+
+</script>
+{% endblock %}

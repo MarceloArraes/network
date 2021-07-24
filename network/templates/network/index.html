@@ -4,109 +4,60 @@
 
 
 
-<div id="initial">Teste</div>
-<div id="initial2">Teste</div>
+<div id="initial"></div>
 
+{% if user.is_authenticated %}
+<div id="compose"></div>
+{% endif %}
+
+<div>Post list by timestamp
+    <div id="timeline"></div>
+</div>
 
 <script type="text/babel">
 
-    //React aqui pega o conteúdo do HTML da postagem para salvar
-
-    /*     class Posted extends React.Component {
-            render() {
-                return <div>
-                    <div>{this.props.user} POSTED! FOLLOW IT</div>
-                    <input type="button" onClick={this.checkFollow} />Follow User
-    
-                </div>;
-            }
-            checkFollow = (event) => {
-                console.log("entered the checkFollow")
-            }
-        } */
-
-    class Userlists extends React.Component {
-        render() {
-            return (< div className="list-group-item list-group-item-action">
-                <div>Post list of users by alphabetical order</div>
-                <div id="userlist"><div id="follow2"></div ></div >
-
-            </div >)
-        }
-        showUsers = (event) => {
-            console.log("entered showUsers")
-        }
-        componentDidMount() {
-            return this.listusers()
-        }
-        listusers = (event) => {
-
-            console.log("entering listusers")
-            fetch('/userlist')
-                .then(response => response.json())
-                .then(data => {
-                    console.log("data")
-                    console.log(data)
-                    data.forEach(element => {
-                        const list = document.createElement('div');
-                        list.className = "list-group-item list-group-item-action";
-                        list.innerHTML = `<div>User: ${element.user}</div><div>Admin Status:${element.superuser}</div><div>Data joined: ${element.data_joined}</div><input type="button" onClick= console.log("clicked") />`
-                        document.querySelector('#userlist').append(list);
-                    });
-                });
-        }
-    }
-
-
     class Timeline extends React.Component {
-
         constructor(props) {
             super(props)
             this.state = {
                 userposts: [],
             };
         }
-
         render() {
             return (
-                < div className="list-group-item list-group-item-action">
-                    <div>Post list by timestamp</div>
-                    <div id="postlist"></div >
-                    <ul>
-                        {this.state.userposts.map(post => (
-                            <li key={post.id}>{post}</li>
-                        ))}
-                    </ul>
-                </div >
+                this.state.userposts.map(post => (
+                    < div className="list-group-item list-group-item-action"
+                        key={post.id}>
+                        <div id="postlist"></div >
+                        <ul >
+                            <div >{post} </div>
+                        </ul>
+                    </div >
+                ))
             );
         }
-
         listposts = (event) => {
             let userposts = []
             // Fazer um fetch e chamar o show posts
             fetch('/showposts')
                 .then(response => response.json())
                 .then(data => {
-                    this.updateUserpost(userposts = data.map((data, index) => {
+                    this.updateUserpost(data.map((data) => {
                         return (
-                            <p key={data.id} className="list-group-item list-group-item-action">
-                                {data.user}  <p>{data.content}</p><p>{data.timestamp}
-                                </p></p>
+                            <li key={data.id} className="list-group-item list-group-item-action">
+                                {data.user} <p>{data.content}</p><p>{data.timestamp}
+                                </p>
+                            </li>
                         );
-
                     }));
                     console.log("List Posts")
                     console.log(data)
                 });
-            console.log(userposts)
-
         }
+
         updateUserpost = (userpost) => {
-            console.log("entering update Userpost")
             this.setState({ userposts: userpost })
-            return true
         }
-
 
         checkFollow = (event) => {
             console.log("entered the checkFollow")
@@ -114,9 +65,7 @@
 
         componentDidMount() {
             return this.listposts()
-
         }
-
     }
 
     class Compose extends React.Component {
@@ -131,16 +80,21 @@
             return (
                 <div className="list-group-item list-group-item-action">
                     <div><h2>Post:</h2></div>
-                    <div><input id='content' type="text" onChange={this.updateContent} /></div>
+                    <div><input id='content' type="text" onChange={this.updateContent} value={this.state.content} /></div>
                     <div><input onClick={this.submitButtonPress} value='Submit' type="button" /></div>
                     <div>{this.state.content}</div>
                 </div>
 
             );
         }
-        submitButtonPress = (event) => {
-            //const userr = this.dataset.section;
 
+        resetInputField = () => {
+            this.setState({
+                content: ""
+            })
+        };
+
+        submitButtonPress = (event) => {
             console.log("button Clicked");
             console.log(`Content: ${this.state.content}`);
             //userr irrelevante já q adiciono o user pelo request no view em python;
@@ -159,12 +113,11 @@
                 .then(response => response.json())
                 .then(result => {
                     console.log(result)
-                    //SErviu para nada. Ainda n sei como atualizar a pag depois de add um novo post
-                    fetch("", {
-                        method: 'GET'
-                    })
+                    if (result.message === "Post sent successfully.") {
+                        console.log("entered the submit if")
+                        this.resetInputField();
+                    }
                 });
-
         }
         updateContent = (event) => {
             this.setState({
@@ -173,22 +126,19 @@
         }
     }
 
-
     class Initial extends React.Component {
-
         render() {
             return (
                 <div>
-                    <Compose />
                     <dir></dir>
-                    <div><Timeline /></div>
                 </div>
             );
         }
     }
 
-    ReactDOM.render(<Initial />, document.querySelector('#initial'));
-    ReactDOM.render(<Userlists />, document.querySelector('#initial2'));
+    //ReactDOM.render(<Initial />, document.querySelector('#initial'));
+    ReactDOM.render(<Compose />, document.querySelector('#compose'));
+    ReactDOM.render(<Timeline />, document.querySelector('#timeline'));
 
 </script>
 {% endblock %}

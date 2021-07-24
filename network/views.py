@@ -15,6 +15,10 @@ def index(request):
     return render(request, "network/index.html")
 
 
+def allposts(request):
+    return render(request, "network/allPosts.html")
+
+
 def login_view(request):
     if request.method == "POST":
 
@@ -69,6 +73,30 @@ def register(request):
 
 @csrf_exempt
 @login_required
+def likes(request):
+    print("entered here")
+    # Composing a post must be via POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    data = json.loads(request.body)
+
+    print(data)
+    postId = data.get("post")
+    print(postId)
+# crete post and add to datebase
+    posting = Post.objects.get(id=postId)
+    print(posting)
+    print(posting.likes)
+
+    posting.likes = posting.likes + 1
+    print(posting.likes)
+    posting.save()
+    return JsonResponse({"message": "Like sent successfully."}, status=201)
+
+
+@csrf_exempt
+@login_required
 def post(request):
     print("entered here")
     # Composing a post must be via POST
@@ -79,8 +107,6 @@ def post(request):
     data = json.loads(request.body)
     #postuser1 = data.get("postuser", "")
     postcontent = data.get("content", "")
-
-    #useruser = Post.objects.get('postuser.username==postuser1')
 
     print(len(postcontent))
     if str(len(postcontent)) == '0':
@@ -106,7 +132,6 @@ def follow_user(request):
 
 
 def showPosts(request):
-    #posts = Post.objects.filter(postuser=request.user)
     posts = Post.objects.all()
     # Return posts in reverse chronologial order
     posts = posts.order_by("-timestamp").all()
@@ -114,10 +139,25 @@ def showPosts(request):
     return False
 
 
+def listUsersPage(request):
+    return render(request, "network/userlists.html")
+
+
 def listUsers(request):
-    print("ENTERING LISTUSERS!!!!!!!!!!!!!!!!")
     users = User.objects.all()
-    #users = users.order_by("-user").all()
     return JsonResponse([user.serialize() for user in users], safe=False)
+    return False
+
+
+def profilePage(request):
+    print("Entered profilePage")
+    return render(request, "network/index.html")
+
+
+def profileUser(request, user_id):
+    print("Entered profileUSER")
+    if (request.method == 'POST'):
+        users = User.objects.filter(id=user_id)
+        return JsonResponse([user.serialize() for user in users], safe=False)
 
     return False

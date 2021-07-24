@@ -8,7 +8,9 @@ class User(AbstractUser):
 
     def serialize(self):
         return {
+            "user_id": self.id,
             "user": self.username,
+            "email": self.email,
             "date_joined": self.date_joined,
             "superuser": self.is_superuser,
         }
@@ -16,20 +18,18 @@ class User(AbstractUser):
     pass
 
 
-"""     following1 = models.ForeignKey(
-        "self", on_delete=models.CASCADE, related_name="following", blank=True) """
-
-
 class Post(models.Model):
     postuser = models.ForeignKey(
         "User", on_delete=models.CASCADE, related_name="posts")
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+    likes = models.PositiveIntegerField(default=0)
 
     def serialize(self):
         return {
             "user": self.postuser.username,
             "content": self.content,
-            "timestamp": self.timestamp
-
+            "timestamp": self.timestamp,
+            "likes": self.likes,
+            "id": self.id,
         }

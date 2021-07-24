@@ -1,0 +1,94 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+<div id="initial"></div>
+
+{% if user.is_authenticated %}
+<div id="compose"></div>
+{% endif %}
+
+Post list by timestamp
+<div id="timeline"></div>
+
+
+<script type="text/babel">
+
+  class Timeline extends React.Component {
+    constructor(props) {
+      super(props)
+      this.state = {
+        userposts:
+          [],
+      };
+    }
+
+    likePost = (event) => {
+      console.log("liked the post")
+      console.log(event.target.value)
+
+      //Send like to backend. Try to update visible likes.
+      fetch('/likes', {
+        method: 'POST',
+        body: JSON.stringify({
+          post: event.target.value,
+        })
+      })
+        .then(response => response.json())
+        .then(result => {
+          console.log(result)
+        })
+      return;
+    }
+
+    goToProfile = (event) => {
+      console.log("go to profile")
+      return;
+    }
+
+    render() {
+      return (
+        this.state.userposts.map(post => (
+          < div
+            key={post.id}>
+            <ul >
+              <button onClick={this.goToProfile} value={post.id}>Profile: {post.user}</button>
+              {post.user}  <p>{post.content}</p><p>{post.timestamp}</p><p>Likes {post.likes}</p>
+              <button onClick={this.likePost} value={post.id}>Like</button>
+            </ul>
+          </div >
+        ))
+      );
+    }
+
+
+    listposts = (event) => {
+      let userposts = []
+      // Fazer um fetch e chamar o show posts
+      fetch('/showposts')
+        .then(response => response.json())
+        .then(data => {
+          this.updateUserpost(data)
+          console.log("List Posts")
+          console.log(data)
+        });
+    }
+
+    updateUserpost = (userpost) => {
+      this.setState({ userposts: userpost })
+    }
+
+    checkFollow = (event) => {
+      console.log("entered the checkFollow")
+    }
+
+    componentDidMount() {
+      return this.listposts()
+    }
+  }
+
+
+  ReactDOM.render(<Timeline />, document.querySelector('#initial'));
+
+</script>
+{% endblock %}

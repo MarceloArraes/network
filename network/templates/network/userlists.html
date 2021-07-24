@@ -1,0 +1,61 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+
+<div id="userlistpage"></div>
+
+
+<script type="text/babel">
+
+  class Userlists extends React.Component {
+    constructor(props) {
+      super(props)
+      this.state = {
+        userlist: [],
+      };
+    }
+
+    render() {
+      return (
+        this.state.userlist.map(user1 => (
+          <ul key={user1.id}>
+            <div>{user1}</div>
+          </ul>
+        )))
+    }
+
+    componentDidMount() {
+      return this.listusers()
+    }
+
+    listusers = () => {
+      let userlist1 = []
+      console.log("entering listusers")
+      fetch('/userlist')
+        .then(response => response.json())
+        .then(data => {
+          console.log("list users");
+          console.log(data);
+          this.updateUserList(data.map((user1) => {
+            return (
+              <li key={user1.id} className="list-group-item list-group-item-action">
+                {user1.user} {user1.date_joined}
+                <div>{user1.email}</div>
+                <div>"Follow user: chamar um view e add o manytomany lá user e user1"</div>
+              </li>
+            )
+          }))
+        });
+    }
+    updateUserList = (userlist1) => {
+      this.setState({ userlist: userlist1 })
+    }
+
+
+  }
+
+  ReactDOM.render(<Userlists />, document.querySelector('#userlistpage'));
+</script>
+
+{% endblock %}
