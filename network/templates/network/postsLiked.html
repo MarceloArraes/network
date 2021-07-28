@@ -1,0 +1,133 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+
+<div id="initial"></div>
+
+{% if user.is_authenticated %}
+<div id="compose"></div>
+{% endif %}
+
+<div>Post list by timestamp
+  <div id="timeline"></div>
+</div>
+
+<script type="text/babel">
+  const { useState, useEffect } = React
+
+  class Timeline extends React.Component {
+    constructor(props) {
+      super(props)
+      this.state = {
+        userposts: [],
+      };
+    }
+    render() {
+      return (
+        this.state.userposts.map(post => (
+          < div className="list-group-item list-group-item-action"
+            key={post.id}>
+            <div id="postlist"></div >
+            <ul >
+              <div >{post} </div>
+            </ul>
+          </div >
+        ))
+      );
+    }
+    listposts = (event) => {
+      let userposts = []
+      // Fazer um fetch e chamar o show posts
+      fetch('/showpostsliked')
+        .then(response => response.json())
+        .then(data => {
+          this.updateUserpost(data.map((data) => {
+            return (
+              <li key={data.id} className="list-group-item list-group-item-action">
+                {data.user} <p>{data.content}</p><p>{data.timestamp}
+                </p>
+              </li>
+            );
+          }));
+          console.log("List Posts")
+          console.log(data)
+        });
+    }
+
+    updateUserpost = (userpost) => {
+      this.setState({ userposts: userpost })
+    }
+
+    checkFollow = (event) => {
+      console.log("entered the checkFollow")
+    }
+
+
+    componentDidMount() {
+      return this.listposts()
+    }
+  }
+
+  function Compose() {
+    const [postuser, setPostUser] = useState('')
+    const [content, setContent] = useState('')
+
+    const contentUpdater = () => {
+      console.log("Tracker funcionando")
+      setContent(event.target.value)
+    }
+
+    const submitButtonPress = (event) => {
+      console.log("button Clicked");
+      console.log(`Content: ${content}`);
+      //userr irrelevante já q adiciono o user pelo request no view em python;
+      const userr = document.querySelector('#userr').innerHTML;
+      const contentt = content;
+      console.log(userr)
+      console.log("entenred the saving post")
+      fetch('/posts', {
+        method: 'POST',
+        body: JSON.stringify({
+          //postuser desnecessario ja q eu adiciono usuario no view em python com um request.user
+          postuser: userr,
+          content: contentt,
+        })
+      })
+        .then(response => response.json())
+        .then(result => {
+          console.log(result)
+          if (result.message === "Post sent successfully.") {
+            console.log("entered the submit if")
+            setContent('')
+          }
+        });
+    }
+
+    return (
+      <div className="list-group-item list-group-item-action">
+        <div><h2>Post:</h2></div>
+        <div><input id='content' type="text" onChange={contentUpdater} value={content} /></div>
+        <div><input onClick={submitButtonPress} value='Submit' type="button" /></div>
+        <div>{content}</div>
+      </div>
+    );
+  }
+
+  class Initial extends React.Component {
+    render() {
+      return (
+        <div>
+          <Compose />
+          <Timeline />
+        </div>
+      );
+    }
+  }
+
+  //ReactDOM.render(<Initial />, document.querySelector('#initial'));
+  ReactDOM.render(<Initial />, document.querySelector('#compose'));
+    //ReactDOM.render(<Timeline />, document.querySelector('#timeline'));
+
+</script>
+{% endblock %}

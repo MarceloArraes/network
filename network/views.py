@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from .models import Post, User
+from .models import Likes, Post, User
 
 
 def index(request):
@@ -17,6 +17,10 @@ def index(request):
 
 def allposts(request):
     return render(request, "network/allPosts.html")
+
+
+def showposts_liked(request):
+    return render(request, "network/postsLiked.html")
 
 
 def login_view(request):
@@ -86,11 +90,17 @@ def likes(request):
     print(postId)
 # crete post and add to datebase
     posting = Post.objects.get(id=postId)
-    print(posting)
-    print(posting.likes)
+    userr = User.objects.get(id=request.user.id)
 
-    posting.likes = posting.likes + 1
-    print(posting.likes)
+    posting.userliked.add(userr)
+    posting.save()
+
+    # aqui estamos pegando todos os posts curtidos por userr
+    #dekil = Post.objects.get(userliked=userr)
+    # print(dekil.postuser)
+
+    posting.howManylikes = posting.howManylikes + 1
+    print(posting.howManylikes)
     posting.save()
     return JsonResponse({"message": "Like sent successfully."}, status=201)
 
@@ -134,6 +144,14 @@ def follow_user(request):
 def showPosts(request):
     posts = Post.objects.all()
     # Return posts in reverse chronologial order
+    posts = posts.order_by("-timestamp").all()
+    return JsonResponse([post.serialize() for post in posts], safe=False)
+    return False
+
+
+def showPostsLiked(request):
+    posts = Post.objects.filter(userliked=request.user)
+    #posts = Post.objects.all()
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
     return False

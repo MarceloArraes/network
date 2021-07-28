@@ -15,7 +15,18 @@ class User(AbstractUser):
             "superuser": self.is_superuser,
         }
 
-    pass
+
+class Likes(models.Model):
+    userliked = models.ForeignKey(
+        "User", on_delete=models.CASCADE, related_name="userlikes")
+    postliked = models.ForeignKey(
+        "Post", on_delete=models.CASCADE, related_name="postliked")
+
+    def serialize(self):
+        return {
+            "user": self.userliked,
+            "post": self.postliked
+        }
 
 
 class Post(models.Model):
@@ -23,13 +34,15 @@ class Post(models.Model):
         "User", on_delete=models.CASCADE, related_name="posts")
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-    likes = models.PositiveIntegerField(default=0)
+    howManylikes = models.PositiveIntegerField(default=0)
+
+    userliked = models.ManyToManyField("User", through='Likes')
 
     def serialize(self):
         return {
             "user": self.postuser.username,
             "content": self.content,
-            "timestamp": self.timestamp,
-            "likes": self.likes,
+            "timestamp": self.timestamp.strftime("%d-%m-%Y %H:%M"),
+            "likes": self.howManylikes,
             "id": self.id,
         }
