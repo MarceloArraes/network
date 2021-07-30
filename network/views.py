@@ -23,6 +23,12 @@ def showposts_liked(request):
     return render(request, "network/postsLiked.html")
 
 
+def profilePage(request, user_id):
+    return render(request, "network/profile.html", {
+        "user_id": user_id,
+    })
+
+
 def login_view(request):
     if request.method == "POST":
 
@@ -167,15 +173,19 @@ def listUsers(request):
     return False
 
 
-def profilePage(request):
-    print("Entered profilePage")
-    return render(request, "network/index.html")
-
-
+@csrf_exempt
 def profileUser(request, user_id):
-    print("Entered profileUSER")
-    if (request.method == 'POST'):
-        users = User.objects.filter(id=user_id)
-        return JsonResponse([user.serialize() for user in users], safe=False)
+    print("Entered profileUSER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    if request.method != "GET":
+        return JsonResponse({"error": "GET request required."}, status=400)
 
-    return False
+    if (request.method == 'GET'):
+        #data = json.loads(request.body)
+        #user_id = data.get("user_id1")
+        if user_id == None:
+            return JsonResponse({"error": "Profile needed."}, status=400)
+
+        users = User.objects.get(id=user_id)
+        return JsonResponse(users.serialize(), safe=False, status=201)
+        # return JsonResponse({"message": "Post sent successfully."}, status=201)
+    return JsonResponse({"error": "GET request required."}, status=400)

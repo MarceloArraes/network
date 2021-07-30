@@ -41,7 +41,10 @@ Post list by timestamp
     }
 
     goToProfile = (event) => {
-      console.log("go to profile")
+      console.log(event.target.value)
+      //fetch('/profilePage/' + event.target.value)
+      //window.location.href('/profilePage/' + event.target.value)
+      window.location.replace("profilePage/" + event.target.value);
       return;
     }
 
@@ -51,7 +54,7 @@ Post list by timestamp
           < div
             key={post.id}>
             <ul >
-              <button onClick={this.goToProfile} value={post.id}>Profile: {post.user}</button>
+              <button onClick={this.goToProfile} value={post.user_id}>Profile: {post.user}</button>
               {post.user}  <p>{post.content}</p><p>{post.timestamp}</p><p>Likes {post.likes}</p>
               <button onClick={this.likePost} value={post.id}>Like</button>
             </ul>

@@ -6,21 +6,36 @@
 
 <div id="initial"></div>
 
-{% if user.is_authenticated %}
-<div id="compose"></div>
-{% endif %}
-
-<div>Post list by timestamp
-  <div id="timeline"></div>
-</div>
-
 <script type="text/babel">
+
+  function Userprofile(props) {
+    const [profile, setProfile] = useState('');
+    // make a fetch to the server and get the request.user and display their info.
+    const profileRef = useRef('');
+
+
+    /*     useEffect(() => {
+          console.log(profileRef);
+        }, [profileRef]) */
+
+    const profiledisplay = fetch('/profile/' + props.user_id)
+      .then(response => response.json())
+      .then(result => {
+        if (result.user != '') {
+          setProfile(result)
+        }
+      });
+
+    return (<h1>profile updater? {profile.user}</h1>)
+
+  }
 
   class Initial extends React.Component {
     render() {
       return (
         <div>
-          <dir>PROFILE PAGE</dir>
+          <Userprofile user_id='{{user_id}}' ></Userprofile >
+          <dir>PROFILE PAGE {{ user_id }}</dir>
         </div>
       );
     }

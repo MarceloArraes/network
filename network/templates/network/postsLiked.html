@@ -14,7 +14,6 @@
 </div>
 
 <script type="text/babel">
-  const { useState, useEffect } = React
 
   class Timeline extends React.Component {
     constructor(props) {
@@ -36,6 +35,7 @@
         ))
       );
     }
+
     listposts = (event) => {
       let userposts = []
       // Fazer um fetch e chamar o show posts
@@ -62,7 +62,6 @@
     checkFollow = (event) => {
       console.log("entered the checkFollow")
     }
-
 
     componentDidMount() {
       return this.listposts()
