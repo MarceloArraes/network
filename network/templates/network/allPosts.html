@@ -37,13 +37,12 @@ Post list by timestamp
         .then(result => {
           console.log(result)
         })
-      return;
+
     }
 
     goToProfile = (event) => {
       console.log(event.target.value)
-      //fetch('/profilePage/' + event.target.value)
-      //window.location.href('/profilePage/' + event.target.value)
+
       window.location.replace("profilePage/" + event.target.value);
       return;
     }

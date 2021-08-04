@@ -8,25 +8,36 @@
 
 <script type="text/babel">
 
+  function ProfileUpdater(props) {
+    //const [profile, setProfile] = useState('');
+    console.log("Profile updater  ")
+    profile1 = Userprofile.map(profile => <h1>profile updater? {profile.user}</h1>)
+    return profile;
+  }
+
   function Userprofile(props) {
-    const [profile, setProfile] = useState('');
+    const [profile, setProfile] = React.useState([]);
     // make a fetch to the server and get the request.user and display their info.
-    const profileRef = useRef('');
+    const profile1 = async () => {
+      const response = await fetch('/profile/' + props.user_id)
+      const mappingProfile = await response.json();
 
+      console.log("entered async function in Userprofile")
 
-    /*     useEffect(() => {
-          console.log(profileRef);
-        }, [profileRef]) */
-
-    const profiledisplay = fetch('/profile/' + props.user_id)
-      .then(response => response.json())
-      .then(result => {
-        if (result.user != '') {
-          setProfile(result)
-        }
-      });
-
-    return (<h1>profile updater? {profile.user}</h1>)
+      //let profile2 = (<h1>{profile.user}  {profile.email}</h1>)
+      setProfile(mappingProfile.user)
+      //.then(response => response.json())
+      //.then(result => {
+      //console.log(result)
+      //setProfile(result)
+      //setProfile(result)
+      //return result;
+      //});
+    };
+    profile1();
+    console.log(profile)
+    console.log("User Profile and stuff")
+    return <h1>profile updater? {profile}</h1>;
 
   }
 

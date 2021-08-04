@@ -20,6 +20,7 @@
             super(props)
             this.state = {
                 userposts: [],
+                msg: "",
             };
         }
         render() {
@@ -35,8 +36,8 @@
                 ))
             );
         }
+
         listposts = (event) => {
-            let userposts = []
             // Fazer um fetch e chamar o show posts
             fetch('/showposts')
                 .then(response => response.json())
