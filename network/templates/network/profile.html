@@ -8,36 +8,49 @@
 
 <script type="text/babel">
 
-  function ProfileUpdater(props) {
-    //const [profile, setProfile] = useState('');
-    console.log("Profile updater  ")
-    profile1 = Userprofile.map(profile => <h1>profile updater? {profile.user}</h1>)
-    return profile;
-  }
+  class Userprofile extends React.Component {
+    constructor(props) {
+      super(props)
+      this.state = {
+        profile: [],
+        user_id: props.user_id,
+      };
+    }
 
-  function Userprofile(props) {
-    const [profile, setProfile] = React.useState([]);
+    render() {
+      return this.state.profile;
+    }
+
     // make a fetch to the server and get the request.user and display their info.
-    const profile1 = async () => {
-      const response = await fetch('/profile/' + props.user_id)
+    profile1 = async () => {
+      console.log("entrou")
+      const response = await fetch('/profile/' + this.state.user_id)
       const mappingProfile = await response.json();
+      console.log(mappingProfile[0])// object with data of the user.
+      //return await mappingProfile[0].user;
 
-      console.log("entered async function in Userprofile")
+      this.updateUserProfile(mappingProfile.map((data) => {
+        return (
+          <li key={data.id} className="list-group-item list-group-item-action">
+            <div><h2> USER PROFILE: </h2></div>
+            <div>
+              <h3> Username: {data.user} <p>Email: {data.email}</p>
+                <p>Date joined: {data.date_joined}</p>
+              </h3>
+            </div>
+          </li>
+        );
+      }));
+    }
 
-      //let profile2 = (<h1>{profile.user}  {profile.email}</h1>)
-      setProfile(mappingProfile.user)
-      //.then(response => response.json())
-      //.then(result => {
-      //console.log(result)
-      //setProfile(result)
-      //setProfile(result)
-      //return result;
-      //});
-    };
-    profile1();
-    console.log(profile)
-    console.log("User Profile and stuff")
-    return <h1>profile updater? {profile}</h1>;
+    componentDidMount() {
+      return this.profile1()
+    }
+
+    updateUserProfile = (profile) => {
+      this.setState({ profile: profile })
+    }
+
 
   }
 

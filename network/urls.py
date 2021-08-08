@@ -14,7 +14,7 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("allposts", views.allposts, name="allposts"),
     path("register", views.register, name="register"),
-    path("follow", views.follow_user, name="follow"),
+    path("follow/<int:user_id>", views.follow_user, name="follow"),
     path("userlist", views.listUsers, name="userlist"),
     path("listUsersPage", views.listUsersPage, name="listUsersPage"),
 

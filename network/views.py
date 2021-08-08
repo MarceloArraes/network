@@ -1,6 +1,7 @@
 import json
 from typing import ContextManager
 from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -91,24 +92,41 @@ def likes(request):
 
     data = json.loads(request.body)
 
-    print(data)
+    # print(data)
     postId = data.get("post")
-    print(postId)
-# crete post and add to datebase
+    # print(postId)
+
+# getting the post that we want to like
     posting = Post.objects.get(id=postId)
+# getting the user that is liking the post
     userr = User.objects.get(id=request.user.id)
 
-    posting.userliked.add(userr)
-    posting.save()
+# adding to the post the usar that liked
+# here we see if the post was already liked by the user (!!!!)
+    try:
+        userLikedResult = posting.userliked.get(id=userr.id)
+        print(userLikedResult)
+        posting.userliked.remove(userLikedResult)
 
-    # aqui estamos pegando todos os posts curtidos por userr
-    #dekil = Post.objects.get(userliked=userr)
-    # print(dekil.postuser)
-
-    posting.howManylikes = posting.howManylikes + 1
-    print(posting.howManylikes)
-    posting.save()
-    return JsonResponse({"message": "Like sent successfully."}, status=201)
+        #likeInPost = Likes.objects.get(postliked=posting, userliked=userr)
+        # print(likeInPost)
+        # likeInPost.save()
+        # posting.userliked.remove(likeInPost)
+        # posting.save()
+        # posting.userliked.objects.exclude(user=userr)
+        # posting.save()
+        #likeInPost = Likes.objects.get(postliked=posting, userliked=userr)
+        posting.howManylikes = posting.howManylikes - 1
+        posting.save()
+        print(posting.howManylikes)
+        return JsonResponse({"message": "Like retrieved successfully."}, status=201)
+    except ObjectDoesNotExist:
+        posting.userliked.add(userr)
+        posting.save()
+        posting.howManylikes = posting.howManylikes + 1
+        print(posting.howManylikes)
+        posting.save()
+        return JsonResponse({"message": "Like sent successfully."}, status=201)
 
 
 @csrf_exempt
@@ -130,7 +148,6 @@ def post(request):
     # Get time of creation of post
     # timestamp = data.get("timestamp")
 
-
 # crete post and add to datebase
     posting = Post(
         postuser=request.user,
@@ -140,11 +157,12 @@ def post(request):
     return JsonResponse({"message": "Post sent successfully."}, status=201)
 
 
-def follow_user(request):
-    print(request.user.username)
+def follow_user(request, user_id):
+    print(request.user.id)
+    print(user_id)
     print("ENTROU EM FOLLOW! !!!!!!!!!!!!!!")
     #request.user.following1 = request.user1
-    return False
+    return JsonResponse({"message": "User Followed sucessfully"}, status=201)
 
 
 def showPosts(request):
@@ -175,7 +193,6 @@ def listUsers(request):
 
 @csrf_exempt
 def profileUser(request, user_id):
-    print("Entered profileUSER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     if request.method != "GET":
         return JsonResponse({"error": "GET request required."}, status=400)
 
@@ -187,6 +204,6 @@ def profileUser(request, user_id):
 
         users = User.objects.get(id=user_id)
 
-        return JsonResponse(users.serialize(), safe=False)
+        return JsonResponse([users.serialize()], safe=False)
         # return JsonResponse({"message": "Post sent successfully."}, status=201)
     return JsonResponse({"error": "GET request required."}, status=400)

@@ -37,7 +37,6 @@ Post list by timestamp
         .then(result => {
           console.log(result)
         })
-
     }
 
     goToProfile = (event) => {
@@ -47,14 +46,26 @@ Post list by timestamp
       return;
     }
 
+    followUser = (event) => {
+      console.log(event.target.value)
+      fetch("follow/" + event.target.value)
+        .then(response => response.json())
+        .then(result => {
+          console.log(result)
+        })
+      return;
+    }
+
+
     render() {
       return (
         this.state.userposts.map(post => (
           < div
             key={post.id}>
-            <ul >
-              <button onClick={this.goToProfile} value={post.user_id}>Profile: {post.user}</button>
-              {post.user}  <p>{post.content}</p><p>{post.timestamp}</p><p>Likes {post.likes}</p>
+            <ul className="list-group-item list-group-item-action" >
+              <button onClick={this.goToProfile} value={post.user_id}>See Profile: {post.user}</button>
+              <button onClick={this.followUser} value={post.user_id}>Follow: {post.user}</button>
+              <p>{post.content}</p><p>{post.timestamp}</p><p>Likes {post.likes}</p>
               <button onClick={this.likePost} value={post.id}>Like</button>
             </ul>
           </div >

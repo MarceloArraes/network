@@ -11,7 +11,7 @@ class User(AbstractUser):
             "user_id": self.id,
             "user": self.username,
             "email": self.email,
-            "date_joined": self.date_joined,
+            "date_joined": self.date_joined.strftime("%d-%m-%Y %H:%M"),
             "superuser": self.is_superuser,
         }
 
