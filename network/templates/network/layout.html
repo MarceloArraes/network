@@ -34,7 +34,7 @@
                 </li>
                 {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Following</a>
+                    <a class="nav-link" href="{% url 'followingPage' %}">Following</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'listUsersPage' %}">All Users</a>

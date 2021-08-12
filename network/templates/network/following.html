@@ -82,16 +82,31 @@ Post list by timestamp
     listposts = (event) => {
       let userposts = []
       // Fazer um fetch e chamar o show posts
-      fetch('/showposts')
+      fetch('/followingList')
         .then(response => response.json())
         .then(data => {
           this.updateUserpost(data)
+
           console.log("List Posts")
+
           console.log(data)
         });
     }
 
+
+
+
+
     updateUserpost = (userpost) => {
+      /* 
+            userpost = userpost.sort(function (a, b) {
+              // Turn your strings into dates, and then subtract them
+              // to get a value that is either negative, positive, or zero.
+              console.log(new Date(b.timestamp))
+              return new Date(b.timestamp) - new Date(a.timestamp);
+            });
+            console.log(userpost) */
+
       this.setState({ userposts: userpost })
     }
 

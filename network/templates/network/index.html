@@ -63,7 +63,6 @@
             console.log("entered the checkFollow")
         }
 
-
         componentDidMount() {
             return this.listposts()
         }
@@ -100,17 +99,20 @@
                     if (result.message === "Post sent successfully.") {
                         console.log("entered the submit if")
                         setContent('')
+
                     }
                 });
         }
 
         return (
+
             <div className="list-group-item list-group-item-action">
                 <div><h2>Post:</h2></div>
                 <div><input id='content' type="text" onChange={contentUpdater} value={content} /></div>
                 <div><input onClick={submitButtonPress} value='Submit' type="button" /></div>
                 <div>{content}</div>
             </div>
+
         );
     }
 
@@ -125,9 +127,7 @@
         }
     }
 
-    //ReactDOM.render(<Initial />, document.querySelector('#initial'));
     ReactDOM.render(<Initial />, document.querySelector('#compose'));
-    //ReactDOM.render(<Timeline />, document.querySelector('#timeline'));
 
 </script>
 {% endblock %}

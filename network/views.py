@@ -24,6 +24,10 @@ def showposts_liked(request):
     return render(request, "network/postsLiked.html")
 
 
+def followingPage(request):
+    return render(request, "network/following.html")
+
+
 def profilePage(request, user_id):
     return render(request, "network/profile.html", {
         "user_id": user_id,
@@ -107,15 +111,6 @@ def likes(request):
         userLikedResult = posting.userliked.get(id=userr.id)
         print(userLikedResult)
         posting.userliked.remove(userLikedResult)
-
-        #likeInPost = Likes.objects.get(postliked=posting, userliked=userr)
-        # print(likeInPost)
-        # likeInPost.save()
-        # posting.userliked.remove(likeInPost)
-        # posting.save()
-        # posting.userliked.objects.exclude(user=userr)
-        # posting.save()
-        #likeInPost = Likes.objects.get(postliked=posting, userliked=userr)
         posting.howManylikes = posting.howManylikes - 1
         posting.save()
         print(posting.howManylikes)
@@ -139,14 +134,12 @@ def post(request):
 
     # Check post content
     data = json.loads(request.body)
-    #postuser1 = data.get("postuser", "")
     postcontent = data.get("content", "")
 
     print(len(postcontent))
     if str(len(postcontent)) == '0':
         return JsonResponse({"error": "Content needed."}, status=400)
     # Get time of creation of post
-    # timestamp = data.get("timestamp")
 
 # crete post and add to datebase
     posting = Post(
@@ -158,15 +151,36 @@ def post(request):
 
 
 def follow_user(request, user_id):
-    print(request.user.id)
-    print(user_id)
     print("ENTROU EM FOLLOW! !!!!!!!!!!!!!!")
-    #request.user.following1 = request.user1
+    userr = User.objects.get(id=request.user.id)
+    print(userr)
+    userToFollow = User.objects.get(id=user_id)
+    print(userToFollow)
+    userr.following1.add(userToFollow)
+    userr.save()
+
     return JsonResponse({"message": "User Followed sucessfully"}, status=201)
+
+
+def followingList(request):
+    fo = []
+    posts = []
+    userr = User.objects.get(id=request.user.id)
+    followings = userr.following1.all()
+
+    for follow in followings:
+        posts.extend(list(Post.objects.filter(
+            postuser=follow).all()))
+
+    posts.sort(key=lambda x: x.id, reverse=True)
+
+    return JsonResponse([post.serialize() for post in posts], safe=False)
+    return False
 
 
 def showPosts(request):
     posts = Post.objects.all()
+    print(type(posts))
     # Return posts in reverse chronologial order
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
