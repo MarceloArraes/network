@@ -36,6 +36,8 @@
             <div>
               <h3> Username: {data.user} <p>Email: {data.email}</p>
                 <p>Date joined: {data.date_joined}</p>
+                <p>Following: {data.following}</p>
+                <p>Followers: {data.followers}</p>
               </h3>
             </div>
           </li>
@@ -54,11 +56,104 @@
 
   }
 
+  class ProfileTimeline extends React.Component {
+    constructor(props) {
+      super(props)
+      this.state = {
+        userposts: [],
+        user_id: props.user_id,
+      };
+    }
+    state = {
+      mssg: ""
+    };
+
+    likePost = (event) => {
+      console.log("liked the post")
+      console.log(event.target.value)
+      //Send like to backend. Try to update visible likes.
+      fetch('/likes', {
+        method: 'POST',
+        body: JSON.stringify({
+          post: event.target.value,
+        })
+
+      })
+        .then(response => response.json())
+        .then(result => {
+          console.log(result)
+          this.listposts()
+        })
+    }
+
+    goToProfile = (event) => {
+      console.log(event.target.value)
+
+      window.location.replace("profilePage/" + event.target.value);
+      return;
+    }
+
+    followUser = (event) => {
+      console.log(event.target.value)
+      fetch("follow/" + event.target.value)
+        .then(response => response.json())
+        .then(result => {
+          console.log(result)
+        })
+
+      return;
+    }
+
+
+    render() {
+      return (
+        this.state.userposts.map(post => (
+          < div
+            key={post.id}>
+            <ul className="list-group-item list-group-item-action" >
+              <button onClick={this.goToProfile} value={post.user_id}>See Profile: {post.user}</button>
+              <button onClick={this.followUser} value={post.user_id}>Follow: {post.user}</button>
+              <p>{post.content}</p><p>{post.timestamp}</p><p>Likes: {post.likes}</p>
+              <button onClick={this.likePost} value={post.id}>Like</button>
+            </ul>
+          </div >
+        ))
+      );
+    }
+
+    listposts = (event) => {
+      // Fazer um fetch e chamar o show posts
+      fetch('/showPostsProfile', {
+        method: 'POST',
+        body: JSON.stringify({
+          userProfile: this.state.user_id,
+        })
+
+      })
+        .then(response => response.json())
+        .then(data => {
+          this.updateUserpost(data)
+          console.log("List Posts")
+          console.log(data)
+        });
+    }
+
+    updateUserpost = (userpost) => {
+      this.setState({ userposts: userpost })
+    }
+
+    componentDidMount() {
+      return this.listposts()
+    }
+  }
+
+
   class Initial extends React.Component {
     render() {
       return (
         <div>
           <Userprofile user_id='{{user_id}}' ></Userprofile >
+          <ProfileTimeline user_id='{{user_id}}' />
         </div>
       );
     }

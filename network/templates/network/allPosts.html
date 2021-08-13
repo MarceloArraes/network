@@ -57,8 +57,15 @@ Post list by timestamp
         .then(result => {
           console.log(result)
         })
+    }
 
-      return;
+    unFollowUser = (event) => {
+      console.log(event.target.value)
+      fetch("unfollow/" + event.target.value)
+        .then(response => response.json())
+        .then(result => {
+          console.log(result)
+        })
     }
 
 
@@ -71,6 +78,7 @@ Post list by timestamp
             <ul className="list-group-item list-group-item-action" >
               <button onClick={this.goToProfile} value={post.user_id}>See Profile: {post.user}</button>
               <button onClick={this.followUser} value={post.user_id}>Follow: {post.user}</button>
+              <button onClick={this.unFollowUser} value={post.user_id}>Unfollow: {post.user}</button>
               <p>{post.content}</p><p>{post.timestamp}</p><p>Likes: {post.likes}</p>
               <button onClick={this.likePost} value={post.id}>Like</button>
             </ul>
@@ -93,10 +101,6 @@ Post list by timestamp
 
     updateUserpost = (userpost) => {
       this.setState({ userposts: userpost })
-    }
-
-    checkFollow = (event) => {
-      console.log("entered the checkFollow")
     }
 
     componentDidMount() {

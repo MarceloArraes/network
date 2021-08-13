@@ -158,12 +158,27 @@ def follow_user(request, user_id):
     print(userToFollow)
     userr.following1.add(userToFollow)
     userr.save()
+    userToFollow.followers += 1
+    userToFollow.save()
 
     return JsonResponse({"message": "User Followed sucessfully"}, status=201)
 
 
+def unfollow_user(request, user_id):
+    print("ENTROU EM FOLLOW! !!!!!!!!!!!!!!")
+    userr = User.objects.get(id=request.user.id)
+    print(userr)
+    userToFollow = User.objects.get(id=user_id)
+    print(userToFollow)
+    userr.following1.remove(userToFollow)
+    userr.save()
+    userToFollow.followers -= 1
+    userToFollow.save()
+
+    return JsonResponse({"message": "User Unfollowed sucessfully"}, status=201)
+
+
 def followingList(request):
-    fo = []
     posts = []
     userr = User.objects.get(id=request.user.id)
     followings = userr.following1.all()
@@ -180,7 +195,6 @@ def followingList(request):
 
 def showPosts(request):
     posts = Post.objects.all()
-    print(type(posts))
     # Return posts in reverse chronologial order
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
@@ -192,6 +206,27 @@ def showPostsLiked(request):
     #posts = Post.objects.all()
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
+    return False
+
+
+@csrf_exempt
+def showPostsProfile(request):
+    print("Entered SHOWPOSTSPROFILE")
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    data = json.loads(request.body)
+    print(data)
+    print("Entered SHOWPOSTSPROFILE POST")
+    user_id = data.get("userProfile")
+    print(user_id)
+    userr = User.objects.get(pk=user_id)
+
+    posts = Post.objects.filter(postuser=userr)
+    print(posts)
+    posts = posts.order_by("-timestamp").all()
+    return JsonResponse([post.serialize() for post in posts], safe=False)
+
     return False
 
 
@@ -211,8 +246,6 @@ def profileUser(request, user_id):
         return JsonResponse({"error": "GET request required."}, status=400)
 
     if (request.method == 'GET'):
-        #data = json.loads(request.body)
-        #user_id = data.get("user_id1")
         if user_id == None:
             return JsonResponse({"error": "Profile needed."}, status=400)
 
