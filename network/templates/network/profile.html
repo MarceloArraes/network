@@ -21,6 +21,28 @@
       return this.state.profile;
     }
 
+    followUser = (event) => {
+      console.log(event.target.value)
+      fetch("/follow/" + event.target.value)
+        .then(response => response.json())
+        .then(result => {
+          console.log(result)
+          this.profile1()
+        })
+    }
+
+    unfollowUser = (event) => {
+      console.log(event.target.value)
+      fetch("/unfollow/" + event.target.value)
+        .then(response => response.json())
+        .then(result => {
+          console.log(result)
+          this.profile1()
+        })
+    }
+
+
+
     // make a fetch to the server and get the request.user and display their info.
     profile1 = async () => {
       console.log("entrou")
@@ -28,14 +50,16 @@
       const mappingProfile = await response.json();
       console.log(mappingProfile[0])// object with data of the user.
       //return await mappingProfile[0].user;
-
       this.updateUserProfile(mappingProfile.map((data) => {
+        console.log(data.user_id)
         return (
-          <li key={data.id} className="list-group-item list-group-item-action">
+          <li key={data.user_id} className="list-group-item list-group-item-action">
             <div><h2> USER PROFILE: </h2></div>
             <div>
               <h3> Username: {data.user} <p>Email: {data.email}</p>
                 <p>Date joined: {data.date_joined}</p>
+                <button onClick={this.followUser} value={data.user_id}>Follow</button>
+                <button onClick={this.unfollowUser} value={data.user_id}>Unfollow</button>
                 <p>Following: {data.following}</p>
                 <p>Followers: {data.followers}</p>
               </h3>

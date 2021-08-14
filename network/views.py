@@ -20,10 +20,12 @@ def allposts(request):
     return render(request, "network/allPosts.html")
 
 
+@login_required
 def showposts_liked(request):
     return render(request, "network/postsLiked.html")
 
 
+@login_required
 def followingPage(request):
     return render(request, "network/following.html")
 
@@ -150,12 +152,11 @@ def post(request):
     return JsonResponse({"message": "Post sent successfully."}, status=201)
 
 
+@login_required
 def follow_user(request, user_id):
     print("ENTROU EM FOLLOW! !!!!!!!!!!!!!!")
     userr = User.objects.get(id=request.user.id)
-    print(userr)
     userToFollow = User.objects.get(id=user_id)
-    print(userToFollow)
     userr.following1.add(userToFollow)
     userr.save()
     userToFollow.followers += 1
@@ -164,12 +165,11 @@ def follow_user(request, user_id):
     return JsonResponse({"message": "User Followed sucessfully"}, status=201)
 
 
+@login_required
 def unfollow_user(request, user_id):
-    print("ENTROU EM FOLLOW! !!!!!!!!!!!!!!")
+    print("ENTROU EM UNFOLLOW! !!!!!!!!!!!!!!")
     userr = User.objects.get(id=request.user.id)
-    print(userr)
     userToFollow = User.objects.get(id=user_id)
-    print(userToFollow)
     userr.following1.remove(userToFollow)
     userr.save()
     userToFollow.followers -= 1
@@ -178,6 +178,7 @@ def unfollow_user(request, user_id):
     return JsonResponse({"message": "User Unfollowed sucessfully"}, status=201)
 
 
+@login_required
 def followingList(request):
     posts = []
     userr = User.objects.get(id=request.user.id)
@@ -201,6 +202,23 @@ def showPosts(request):
     return False
 
 
+@csrf_exempt
+def editPost(request):
+    print("Entered editPost")
+
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    data = json.loads(request.body)
+    postid = data.get("post_id", "")
+
+    post = Post.objects.get(pk=postid)
+    print([post.serialize()])
+
+    return JsonResponse([post.serialize()], safe=False)
+
+
+@login_required
 def showPostsLiked(request):
     posts = Post.objects.filter(userliked=request.user)
     #posts = Post.objects.all()
@@ -210,20 +228,18 @@ def showPostsLiked(request):
 
 
 @csrf_exempt
+@login_required
 def showPostsProfile(request):
     print("Entered SHOWPOSTSPROFILE")
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
 
     data = json.loads(request.body)
-    print(data)
     print("Entered SHOWPOSTSPROFILE POST")
     user_id = data.get("userProfile")
-    print(user_id)
     userr = User.objects.get(pk=user_id)
 
     posts = Post.objects.filter(postuser=userr)
-    print(posts)
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
 

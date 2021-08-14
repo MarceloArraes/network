@@ -50,25 +50,21 @@ Post list by timestamp
       return;
     }
 
-    followUser = (event) => {
+    editPost = (event) => {
+      console.log('Edit Post')
       console.log(event.target.value)
-      fetch("follow/" + event.target.value)
+      const idnumber = event.target.value
+      fetch('/editpost', {
+        method: 'POST',
+        body: JSON.stringify({
+          post_id: idnumber,
+        })
+      })
         .then(response => response.json())
         .then(result => {
           console.log(result)
         })
     }
-
-    unFollowUser = (event) => {
-      console.log(event.target.value)
-      fetch("unfollow/" + event.target.value)
-        .then(response => response.json())
-        .then(result => {
-          console.log(result)
-        })
-    }
-
-
 
     render() {
       return (
@@ -77,9 +73,7 @@ Post list by timestamp
             key={post.id}>
             <ul className="list-group-item list-group-item-action" >
               <button onClick={this.goToProfile} value={post.user_id}>See Profile: {post.user}</button>
-              <button onClick={this.followUser} value={post.user_id}>Follow: {post.user}</button>
-              <button onClick={this.unFollowUser} value={post.user_id}>Unfollow: {post.user}</button>
-              <p>{post.content}</p><p>{post.timestamp}</p><p>Likes: {post.likes}</p>
+              <p><div>{post.content}   <button onClick={this.editPost} value={post.id}>Edit</button> </div></p><p>{post.timestamp}</p><p>Likes: {post.likes}</p>
               <button onClick={this.likePost} value={post.id}>Like</button>
             </ul>
           </div >

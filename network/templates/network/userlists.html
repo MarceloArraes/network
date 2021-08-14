@@ -29,6 +29,25 @@
       return this.listusers()
     }
 
+    followUser = (event) => {
+      console.log(event.target.value)
+      fetch("follow/" + event.target.value)
+        .then(response => response.json())
+        .then(result => {
+          console.log(result)
+        })
+    }
+
+    unfollowUser = (event) => {
+      console.log(event.target.value)
+      fetch("unfollow/" + event.target.value)
+        .then(response => response.json())
+        .then(result => {
+          console.log(result)
+        })
+    }
+
+
     listusers = () => {
       let userlist1 = []
       console.log("entering listusers")
@@ -37,12 +56,14 @@
         .then(data => {
           console.log("list users");
           console.log(data);
-          this.updateUserList(data.map((user1) => {
+          this.updateUserList(data.map((data) => {
             return (
-              <li key={user1.id} className="list-group-item list-group-item-action">
-                {user1.user} {user1.date_joined}
-                <div>{user1.email}</div>
-                <div>"Follow user: chamar um view e add o manytomany lá user e user1"</div>
+              <li key={data.id} className="list-group-item list-group-item-action">
+                {data.user}
+                <div>Joined: {data.date_joined}</div>
+                <div>{data.email}</div>
+                <button onClick={this.followUser} value={data.user_id}>Follow</button>
+                <button onClick={this.unfollowUser} value={data.user_id}>Unfollow</button>
               </li>
             )
           }))
