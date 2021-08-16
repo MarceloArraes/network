@@ -1,7 +1,7 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-
+<div id="edit"></div>
 <div id="initial"></div>
 
 {% if user.is_authenticated %}
@@ -63,6 +63,8 @@ Post list by timestamp
         .then(response => response.json())
         .then(result => {
           console.log(result)
+          console.log(result[0].user_id)
+          this.listposts()
         })
     }
 
@@ -70,10 +72,12 @@ Post list by timestamp
       return (
         this.state.userposts.map(post => (
           < div
-            key={post.id}>
+            key={post.id} id={post.id} >
             <ul className="list-group-item list-group-item-action" >
               <button onClick={this.goToProfile} value={post.user_id}>See Profile: {post.user}</button>
+              {post.editMode ? (console.log("post mode")) : (console.log("post mode 2"))}
               <p><div>{post.content}   <button onClick={this.editPost} value={post.id}>Edit</button> </div></p><p>{post.timestamp}</p><p>Likes: {post.likes}</p>
+
               <button onClick={this.likePost} value={post.id}>Like</button>
             </ul>
           </div >

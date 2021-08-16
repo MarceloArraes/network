@@ -38,6 +38,7 @@ class Post(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     howManylikes = models.PositiveIntegerField(default=0)
+    editMode = models.BooleanField(default=False)
 
     userliked = models.ManyToManyField("User", through='Likes')
 
@@ -49,4 +50,5 @@ class Post(models.Model):
             "timestamp": self.timestamp.strftime("%d-%m-%Y %H:%M"),
             "likes": self.howManylikes,
             "id": self.id,
+            "editMode": self.editMode,
         }

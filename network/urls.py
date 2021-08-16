@@ -22,7 +22,6 @@ urlpatterns = [
     path("userlist", views.listUsers, name="userlist"),
     path("editpost", views.editPost, name="editpost"),
     path("listUsersPage", views.listUsersPage, name="listUsersPage"),
-
     path("profile/<int:user_id>", views.profileUser, name="profile"),
     path("profilePage/<int:user_id>", views.profilePage, name="profilePage"),
 ]

@@ -213,6 +213,10 @@ def editPost(request):
     postid = data.get("post_id", "")
 
     post = Post.objects.get(pk=postid)
+    print(post.editMode)
+    post.editMode = True
+    post.save()
+
     print([post.serialize()])
 
     return JsonResponse([post.serialize()], safe=False)
