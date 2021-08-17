@@ -44,6 +44,25 @@ Post list by timestamp
         })
     }
 
+    savePostContent = (event) => {
+      const idnumber = event.target.id
+      const newContent = event.target.value
+
+      fetch('/editpost', {
+        method: 'POST',
+        body: JSON.stringify({
+          post_id: idnumber,
+          content: newContent,
+        })
+      })
+        .then(response => response.json())
+        .then(result => {
+          console.log(result)
+          console.log(result[0].user_id)
+          this.listposts()
+        })
+    }
+
     goToProfile = (event) => {
       console.log(event.target.value)
 
@@ -109,7 +128,7 @@ Post list by timestamp
                   post.user == user && post.editMode ?
                     (<div>
                       <input id={post.id} type="text" value={post.content} onChange={this.contentUpdater} />
-                      <button>Save</button>
+                      <button id={post.id} value={post.content} onClick={this.savePostContent}>Save</button>
                     </div>) :
                     post.user == user ?
                       <div>{post.content}

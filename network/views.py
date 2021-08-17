@@ -211,10 +211,12 @@ def editPost(request):
 
     data = json.loads(request.body)
     postid = data.get("post_id", "")
+    postContent = data.get("content", "")
 
     post = Post.objects.get(pk=postid)
-    print(post.editMode)
-    post.editMode = True
+    print(post.content)
+    print(postContent)
+    post.content = postContent
     post.save()
 
     print([post.serialize()])
