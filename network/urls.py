@@ -8,6 +8,7 @@ urlpatterns = [
     path("posts", views.post, name="post"),
     path("likes", views.likes, name="likes"),
     path("showposts", views.showPosts, name="showposts"),
+    path("showposts/<str:page>", views.showPosts, name="showposts"),
     path("showposts_liked", views.showposts_liked, name="showposts_liked"),
     path("showpostsliked", views.showPostsLiked, name="showpostsliked"),
     path("showPostsProfile", views.showPostsProfile, name="showPostsProfile"),

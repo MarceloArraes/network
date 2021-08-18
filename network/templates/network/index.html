@@ -7,39 +7,79 @@
 
 {% if user.is_authenticated %}
 <div id="compose"></div>
+
 {% endif %}
 
-<div>Post list by timestamp
-    <div id="timeline"></div>
-</div>
+<div id="timeline"></div>
+
+
 
 <script type="text/babel">
 
     class Timeline extends React.Component {
+
         constructor(props) {
             super(props)
             this.state = {
                 userposts: [],
+                page: "?page=1",
+                pagenumber: 1,
                 msg: "",
             };
         }
+
         render() {
             return (
-                this.state.userposts.map(post => (
-                    < div className="list-group-item list-group-item-action"
-                        key={post.id}>
-                        <div id="postlist"></div >
-                        <ul >
-                            <div >{post} </div>
-                        </ul>
-                    </div >
-                ))
-            );
+                <div>
+                    {this.state.userposts.map(post => (
+                        < div className="list-group-item list-group-item-action"
+                            key={post.id}>
+                            <div id="postlist"></div >
+                            <ul >
+                                <div >{post} </div>
+                            </ul>
+                        </div >
+                    )
+
+                    )
+                    }
+                    <h1>
+                        {this.state.pagenumber > 1 &&
+                            <button onClick={this.prevPage}>prev</button>}
+                        PAGE {this.state.pagenumber}
+                        {this.state.userposts.length == 10 &&
+                            <button onClick={this.nextPage}>next</button>}
+                    </h1>
+                </div>
+
+            )
         }
+
+        nextPage = async (event) => {
+            var newPagenumber = this.state.pagenumber + 1
+            if (this.state.userposts.length < 10) {
+                newPagenumber = newPagenumber - 1
+            }
+            await this.setState({ pagenumber: newPagenumber, page: '?page=' + newPagenumber })
+            await this.updatePage()
+        }
+        prevPage = async (event) => {
+            var newPagenumber = this.state.pagenumber - 1
+            if (newPagenumber < 1) {
+                newPagenumber = 1
+            }
+            await this.setState({ pagenumber: newPagenumber, page: '?page=' + newPagenumber })
+            await this.updatePage()
+        }
+
+        updatePage = () => {
+            this.listposts()
+        }
+
 
         listposts = (event) => {
             // Fazer um fetch e chamar o show posts
-            fetch('/showposts')
+            fetch('/showposts' + this.state.page)
                 .then(response => response.json())
                 .then(data => {
                     this.updateUserpost(data.map((data) => {
@@ -105,7 +145,6 @@
         }
 
         return (
-
             <div className="list-group-item list-group-item-action">
                 <div><h2>Post:</h2></div>
                 <div><input id='content' type="text" onChange={contentUpdater} value={content} /></div>

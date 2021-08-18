@@ -1,5 +1,6 @@
 import json
 from typing import ContextManager
+from django.db.models.base import Model
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
@@ -10,6 +11,8 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from .models import Likes, Post, User
+from django.core.paginator import Paginator
+import math
 
 
 def index(request):
@@ -154,7 +157,7 @@ def post(request):
 
 @login_required
 def follow_user(request, user_id):
-    print("ENTROU EM FOLLOW! !!!!!!!!!!!!!!")
+    print("ENTROU EM FOLLOW! !!!")
     userr = User.objects.get(id=request.user.id)
     userToFollow = User.objects.get(id=user_id)
     userr.following1.add(userToFollow)
@@ -167,7 +170,7 @@ def follow_user(request, user_id):
 
 @login_required
 def unfollow_user(request, user_id):
-    print("ENTROU EM UNFOLLOW! !!!!!!!!!!!!!!")
+    print("ENTROU EM UNFOLLOW! !!!!")
     userr = User.objects.get(id=request.user.id)
     userToFollow = User.objects.get(id=user_id)
     userr.following1.remove(userToFollow)
@@ -195,10 +198,30 @@ def followingList(request):
 
 
 def showPosts(request):
+    print("Entered showPosts")
     posts = Post.objects.all()
+
     # Return posts in reverse chronologial order
     posts = posts.order_by("-timestamp").all()
-    return JsonResponse([post.serialize() for post in posts], safe=False)
+
+    pagetotal = math.ceil(len(posts)/10)
+    if request.GET.get('page'):
+        page_number = int(request.GET.get('page'))
+    else:
+        page_number = 1
+    print(page_number)
+
+    if page_number > pagetotal:
+        page_number = pagetotal
+
+    start = int(page_number) * 10 - 10
+    finish = start+10
+
+    if math.fmod(len(posts), 10) == 0 and page_number == pagetotal:
+        print("this especial case")
+        start += 1
+
+    return JsonResponse([post.serialize() for post in posts[start:finish]], safe=False)
     return False
 
 
@@ -214,8 +237,6 @@ def editPost(request):
     postContent = data.get("content", "")
 
     post = Post.objects.get(pk=postid)
-    print(post.content)
-    print(postContent)
     post.content = postContent
     post.save()
 
@@ -236,12 +257,11 @@ def showPostsLiked(request):
 @csrf_exempt
 @login_required
 def showPostsProfile(request):
-    print("Entered SHOWPOSTSPROFILE")
+    print("Entered showPostsProfile")
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
 
     data = json.loads(request.body)
-    print("Entered SHOWPOSTSPROFILE POST")
     user_id = data.get("userProfile")
     userr = User.objects.get(pk=user_id)
 
