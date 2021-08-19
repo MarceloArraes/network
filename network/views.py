@@ -292,7 +292,12 @@ def profileUser(request, user_id):
             return JsonResponse({"error": "Profile needed."}, status=400)
 
         users = User.objects.get(id=user_id)
+        print(request.user.id)
+        print(users.id)
 
+        if users.id == request.user.id:
+            users.userHimself = 1
+        print(users.serialize())
         return JsonResponse([users.serialize()], safe=False)
         # return JsonResponse({"message": "Post sent successfully."}, status=201)
     return JsonResponse({"error": "GET request required."}, status=400)

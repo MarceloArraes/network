@@ -2,7 +2,6 @@
 
 {% block body %}
 
-
 <div id="initial"></div>
 
 {% if user.is_authenticated %}
@@ -12,9 +11,8 @@
 
 <div id="timeline"></div>
 
-
-
 <script type="text/babel">
+
 
     class Timeline extends React.Component {
 
@@ -30,7 +28,7 @@
 
         render() {
             return (
-                <div>
+                <div id="timeline-room">
                     {this.state.userposts.map(post => (
                         < div className="list-group-item list-group-item-action"
                             key={post.id}>
@@ -45,10 +43,15 @@
                     }
                     <h1>
                         {this.state.pagenumber > 1 &&
-                            <button onClick={this.prevPage}>prev</button>}
+                            <button onClick={this.prevPage}><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-bar-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5zM10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5z" />
+                            </svg></button>}
                         PAGE {this.state.pagenumber}
                         {this.state.userposts.length == 10 &&
-                            <button onClick={this.nextPage}>next</button>}
+                            <button onClick={this.nextPage}><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-bar-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8zm-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5z" />
+                            </svg></button>}
+
                     </h1>
                 </div>
 
@@ -147,7 +150,7 @@
         return (
             <div className="list-group-item list-group-item-action">
                 <div><h2>Post:</h2></div>
-                <div><input id='content' type="text" onChange={contentUpdater} value={content} /></div>
+                <div><input id='content' size="100" type="text" onChange={contentUpdater} value={content} /></div>
                 <div><input onClick={submitButtonPress} value='Submit' type="button" /></div>
                 <div>{content}</div>
             </div>

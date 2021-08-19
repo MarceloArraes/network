@@ -6,6 +6,7 @@ from django.db.models.base import Model
 class User(AbstractUser):
     following1 = models.ManyToManyField("self", symmetrical=False)
     followers = models.PositiveIntegerField(default=0)
+    userHimself = models.PositiveIntegerField(default=0)
 
     def serialize(self):
         return {
@@ -16,6 +17,7 @@ class User(AbstractUser):
             "superuser": self.is_superuser,
             "following": int(self.following1.count()),
             "followers": self.followers,
+            "userHimself": self.userHimself
         }
 
 
