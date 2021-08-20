@@ -13,7 +13,6 @@
 
 <script type="text/babel">
 
-
     class Timeline extends React.Component {
 
         constructor(props) {
@@ -162,14 +161,15 @@
         render() {
             return (
                 <div>
-                    <Compose />
+                    {!(document.getElementById("userr").innerHTML == "No User Loggedin") && <Compose />}
+
                     <Timeline />
                 </div>
             );
         }
     }
 
-    ReactDOM.render(<Initial />, document.querySelector('#compose'));
+    ReactDOM.render(<Initial />, document.querySelector('#initial'));
 
 </script>
 {% endblock %}

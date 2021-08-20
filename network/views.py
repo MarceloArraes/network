@@ -19,6 +19,7 @@ def index(request):
     return render(request, "network/index.html")
 
 
+@login_required
 def allposts(request):
     return render(request, "network/allPosts.html")
 
@@ -33,6 +34,7 @@ def followingPage(request):
     return render(request, "network/following.html")
 
 
+@login_required
 def profilePage(request, user_id):
     return render(request, "network/profile.html", {
         "user_id": user_id,
@@ -193,7 +195,24 @@ def followingList(request):
 
     posts.sort(key=lambda x: x.id, reverse=True)
 
-    return JsonResponse([post.serialize() for post in posts], safe=False)
+    pagetotal = math.ceil(len(posts)/10)
+    if request.GET.get('page'):
+        page_number = int(request.GET.get('page'))
+    else:
+        page_number = 1
+    print(page_number)
+
+    if page_number > pagetotal:
+        page_number = pagetotal
+
+    start = int(page_number) * 10 - 10
+    finish = start+10
+
+    if math.fmod(len(posts), 10) == 0 and page_number == pagetotal:
+        print("this especial case")
+        start += 1
+
+    return JsonResponse([post.serialize() for post in posts[start:finish]], safe=False)
     return False
 
 
@@ -250,8 +269,25 @@ def showPostsLiked(request):
     posts = Post.objects.filter(userliked=request.user)
     #posts = Post.objects.all()
     posts = posts.order_by("-timestamp").all()
-    return JsonResponse([post.serialize() for post in posts], safe=False)
-    return False
+
+    pagetotal = math.ceil(len(posts)/10)
+    if request.GET.get('page'):
+        page_number = int(request.GET.get('page'))
+    else:
+        page_number = 1
+    print(page_number)
+
+    if page_number > pagetotal:
+        page_number = pagetotal
+
+    start = int(page_number) * 10 - 10
+    finish = start+10
+
+    if math.fmod(len(posts), 10) == 0 and page_number == pagetotal:
+        print("this especial case")
+        start += 1
+
+    return JsonResponse([post.serialize() for post in posts[start:finish]], safe=False)
 
 
 @csrf_exempt
@@ -278,11 +314,13 @@ def listUsersPage(request):
 
 def listUsers(request):
     users = User.objects.all()
+
     return JsonResponse([user.serialize() for user in users], safe=False)
     return False
 
 
 @csrf_exempt
+@login_required
 def profileUser(request, user_id):
     if request.method != "GET":
         return JsonResponse({"error": "GET request required."}, status=400)
@@ -299,5 +337,4 @@ def profileUser(request, user_id):
             users.userHimself = 1
         print(users.serialize())
         return JsonResponse([users.serialize()], safe=False)
-        # return JsonResponse({"message": "Post sent successfully."}, status=201)
     return JsonResponse({"error": "GET request required."}, status=400)

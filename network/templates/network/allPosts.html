@@ -1,18 +1,16 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-<div id="edit"></div>
+
 <div id="initial"></div>
 
 {% if user.is_authenticated %}
 <div id="compose"></div>
 {% endif %}
 
-Post list by timestamp
-<div id="timeline"></div>
-
 
 <script type="text/babel">
+
   let user = document.getElementById('userr').innerHTML
 
   class Timeline extends React.Component {
@@ -78,7 +76,7 @@ Post list by timestamp
       const userpostsLen = (this.state.userposts.length)
       console.log(userpostsLen)
       // A mathematical solution to the problem of the inverted array (because of timeline order)
-      const userpostsCopy = this.state.userposts.slice() //const ages = [3, 10, 18, 20];
+      const userpostsCopy = this.state.userposts.slice() //Copy the array.
 
       let index = userpostsCopy.findIndex(element => {
         if (element.id == event.target.value) {

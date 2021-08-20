@@ -19,6 +19,8 @@
       super(props)
       this.state = {
         userposts: [],
+        page: "?page=1",
+        pagenumber: 1,
       };
     }
     state = {
@@ -50,15 +52,6 @@
       return;
     }
 
-    followUser = (event) => {
-      console.log(event.target.value)
-      fetch("follow/" + event.target.value)
-        .then(response => response.json())
-        .then(result => {
-          console.log(result)
-        })
-    }
-
     unFollowUser = (event) => {
       console.log(event.target.value)
       fetch("unfollow/" + event.target.value)
@@ -71,25 +64,59 @@
 
     render() {
       return (
-        this.state.userposts.map(post => (
-          < div
-            key={post.id}>
-            <ul className="list-group-item list-group-item-action" >
-              <button onClick={this.goToProfile} value={post.user_id}>See Profile: {post.user}</button>
-              <button onClick={this.followUser} value={post.user_id}>Follow: {post.user}</button>
-              <button onClick={this.unFollowUser} value={post.user_id}>Unfollow: {post.user}</button>
-              <p>{post.content}</p><p>{post.timestamp}</p><p>Likes: {post.likes}</p>
-              <button onClick={this.likePost} value={post.id}>Like</button>
-            </ul>
-          </div >
-        ))
+        <div>
+          {this.state.userposts.map(post => (
+            < div
+              key={post.id}>
+              <ul className="list-group-item list-group-item-action" >
+                <button onClick={this.goToProfile} value={post.user_id}>See Profile: {post.user}</button>
+                <button onClick={this.unFollowUser} value={post.user_id}>Unfollow: {post.user}</button>
+                <p>{post.content}</p><p>{post.timestamp}</p><p>Likes: {post.likes}</p>
+                <button onClick={this.likePost} value={post.id}>Like</button>
+              </ul>
+            </div >
+          ))}
+          <h1>
+            {this.state.pagenumber > 1 &&
+              <button onClick={this.prevPage}><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-bar-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5zM10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5z" />
+              </svg></button>}
+            PAGE {this.state.pagenumber}
+            {this.state.userposts.length == 10 &&
+              <button onClick={this.nextPage}><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-bar-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M6 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L12.293 7.5H6.5A.5.5 0 0 0 6 8zm-2.5 7a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5z" />
+              </svg></button>}
+
+          </h1>
+        </div>
       );
+    }
+
+    nextPage = async (event) => {
+      var newPagenumber = this.state.pagenumber + 1
+      if (this.state.userposts.length < 10) {
+        newPagenumber = newPagenumber - 1
+      }
+      await this.setState({ pagenumber: newPagenumber, page: '?page=' + newPagenumber })
+      await this.updatePage()
+    }
+    prevPage = async (event) => {
+      var newPagenumber = this.state.pagenumber - 1
+      if (newPagenumber < 1) {
+        newPagenumber = 1
+      }
+      await this.setState({ pagenumber: newPagenumber, page: '?page=' + newPagenumber })
+      await this.updatePage()
+    }
+
+    updatePage = () => {
+      this.listposts()
     }
 
     listposts = (event) => {
       let userposts = []
       // Fazer um fetch e chamar o show posts
-      fetch('/followingList')
+      fetch('/followingList' + this.state.page)
         .then(response => response.json())
         .then(data => {
           this.updateUserpost(data)
@@ -102,10 +129,6 @@
 
     updateUserpost = (userpost) => {
       this.setState({ userposts: userpost })
-    }
-
-    checkFollow = (event) => {
-      console.log("entered the checkFollow")
     }
 
     componentDidMount() {

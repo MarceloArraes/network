@@ -41,8 +41,6 @@
         })
     }
 
-
-
     // make a fetch to the server and get the request.user and display their info.
     profile1 = async () => {
       console.log("entrou")
@@ -93,6 +91,8 @@
       this.state = {
         userposts: [],
         user_id: props.user_id,
+        page: "?page=1",
+        pagenumber: 1,
       };
     }
     state = {
