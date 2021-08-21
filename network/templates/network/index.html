@@ -87,8 +87,8 @@
                     this.updateUserpost(data.map((data) => {
                         return (
                             <li key={data.id} className="list-group-item list-group-item-action">
-                                {data.user} <p>{data.content}</p><p>{data.timestamp}
-                                </p>
+                                {data.user} <p>{data.content}</p><p>{data.timestamp}</p>
+                                <p>Likes: {data.likes}</p>
                             </li>
                         );
                     }));
@@ -151,7 +151,6 @@
                 <div><h2>Post:</h2></div>
                 <div><input id='content' size="100" type="text" onChange={contentUpdater} value={content} /></div>
                 <div><input onClick={submitButtonPress} value='Submit' type="button" /></div>
-                <div>{content}</div>
             </div>
 
         );

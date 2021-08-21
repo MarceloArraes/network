@@ -142,9 +142,8 @@
     return (
       <div className="list-group-item list-group-item-action">
         <div><h2>Post:</h2></div>
-        <div><input id='content' type="text" onChange={contentUpdater} value={content} /></div>
+        <div><input id='content' size="100" type="TEXTAREA" onChange={contentUpdater} value={content} /></div>
         <div><input onClick={submitButtonPress} value='Submit' type="button" /></div>
-        <div>{content}</div>
       </div>
     );
   }
